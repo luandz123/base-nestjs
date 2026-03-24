@@ -8,30 +8,28 @@ import { UserModule } from './modules/user/user.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard.js';
 import { RolesGuard } from './common/guards/roles.guard.js';
+import { databaseConfig, jwtConfig, appConfig } from './config/index.js';
 
 @Module({
   imports: [
-    // Load .env file globally
     ConfigModule.forRoot({
       isGlobal: true,
+      load: [databaseConfig, jwtConfig, appConfig],
     }),
 
     // TypeORM with MSSQL
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        type: 'mssql',
-        host: configService.get<string>('DB_HOST', 'localhost'),
-        port: configService.get<number>('DB_PORT', 1433),
-        username: configService.get<string>('DB_USERNAME', 'sa'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_DATABASE', 'quan_ly_dh'),
-        autoLoadEntities: true,
-        synchronize: true, // Chỉ dùng cho dev, production nên dùng migrations
-        options: {
-          encrypt: false, // Set true nếu dùng Azure SQL
-          trustServerCertificate: true,
-        },
+        type: configService.get<string>('database.type') as 'mssql',
+        host: configService.get<string>('database.host'),
+        port: configService.get<number>('database.port'),
+        username: configService.get<string>('database.username'),
+        password: configService.get<string>('database.password'),
+        database: configService.get<string>('database.database'),
+        entities: [],
+        synchronize: configService.get<boolean>('database.synchronize'),
+        options: configService.get('database.options'),
       }),
       inject: [ConfigService],
     }),
