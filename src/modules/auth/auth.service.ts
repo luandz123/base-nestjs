@@ -73,7 +73,7 @@ export class AuthService {
   }
 
   async getProfile(userId: number) {
-    const user = await this.userService.findOne(userId);
+    const user = await this.userService.findOne({ id: userId });
     if (!user) {
       throw new UnauthorizedException('User không tồn tại');
     }

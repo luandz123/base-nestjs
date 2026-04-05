@@ -6,6 +6,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { UserModule } from './modules/user/user.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
+import { SubjectModule } from './modules/subject/subject.module.js';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard.js';
 import { RolesGuard } from './common/guards/roles.guard.js';
 import { databaseConfig, jwtConfig, appConfig } from './config/index.js';
@@ -27,7 +28,7 @@ import { databaseConfig, jwtConfig, appConfig } from './config/index.js';
         username: configService.get<string>('database.username'),
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.database'),
-        entities: [],
+        autoLoadEntities: true,
         synchronize: configService.get<boolean>('database.synchronize'),
         options: configService.get('database.options'),
       }),
@@ -36,6 +37,7 @@ import { databaseConfig, jwtConfig, appConfig } from './config/index.js';
 
     UserModule,
     AuthModule,
+    SubjectModule,
   ],
   controllers: [AppController],
   providers: [

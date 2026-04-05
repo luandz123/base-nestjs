@@ -35,13 +35,13 @@ export class UserController {
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Lấy danh sách tất cả user (Admin only)' })
   findAll() {
-    return this.userService.findAll();
+    return this.userService.getMany();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Lấy thông tin user theo ID' })
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.findOne(id);
+    return this.userService.getById(id);
   }
 
   @Patch(':id')
@@ -51,13 +51,13 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.userService.update(id, updateUserDto);
+    return this.userService.updateById(id, updateUserDto);
   }
 
   @Delete(':id')
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Xóa user (Admin only)' })
   remove(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.remove(id);
+    return this.userService.deleteById(id);
   }
 }

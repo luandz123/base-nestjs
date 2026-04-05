@@ -1,45 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
-import { User } from './entities/user.entity.js';
+import { DataSource } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto.js';
-import { UpdateUserDto } from './dto/update-user.dto.js';
+import * as bcrypt from 'bcrypt';
+import { BaseService } from '../../common/base/base.service.js';
+import { User } from './entities/user.entity.js';
+import { UserRepository } from './user.repository.js';
 
 @Injectable()
-export class UserService {
+export class UserService extends BaseService<User> {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) {}
-
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    const user = this.userRepository.create({
-      ...createUserDto,
-      password: hashedPassword,
-    });
-    return this.userRepository.save(user);
-  }
-
-  async findAll(): Promise<User[]> {
-    return this.userRepository.find();
-  }
-
-  async findOne(id: number): Promise<User | null> {
-    return this.userRepository.findOneBy({ id });
+    private readonly userRepository: UserRepository,
+    dataSource: DataSource,
+  ) {
+    super(userRepository, dataSource);
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.userRepository.findOneBy({ email });
+    return this.userRepository.findByEmail(email);
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User | null> {
-    await this.userRepository.update(id, updateUserDto);
-    return this.findOne(id);
-  }
-
-  async remove(id: number): Promise<void> {
-    await this.userRepository.delete(id);
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    return this.createOne({
+      ...createUserDto,
+      password: hashedPassword,
+    });
   }
 }

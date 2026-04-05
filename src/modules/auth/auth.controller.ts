@@ -13,12 +13,6 @@ import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { Public } from '../../common/decorators/public.decorator.js';
 
-interface AuthenticatedRequest {
-  user: {
-    id: number;
-  };
-}
-
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -42,7 +36,7 @@ export class AuthController {
   @Get('profile')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Lấy thông tin profile của user đang đăng nhập' })
-  getProfile(@Request() req: AuthenticatedRequest) {
+  getProfile(@Request() req) {
     return this.authService.getProfile(req.user.id);
   }
 }
